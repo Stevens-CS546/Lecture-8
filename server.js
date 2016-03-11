@@ -1,36 +1,65 @@
 // We first require our express package
 var express = require('express');
 var bodyParser = require('body-parser');
-var myData = require('./data.js');
+var movieData = require('./data.js');
 
-// This package exports the function to create an express instance:
+// We create our express isntance:
 var app = express();
 
-// We can setup Jade now!
-app.set('view engine', 'ejs');
-
-// This is called 'adding middleware', or things that will help parse your request
 app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-// This middleware will activate for every request we make to 
-// any path starting with /assets;
-// it will check the 'static' folder for matching files 
-app.use('/assets', express.static('static'));
+// If you'll notice, there's not a single database call in the server file!
 
-// Setup your routes here!
-
-app.get("/home", function (request, response) {
-    response.render("pages/home", { pageTitle: "Welcome Home" });
+// Get the best movies
+app.get("/api/movies/best", function(request, response) {
+    movieData.getPopularMovies().then(function(popularMovies){
+        response.json(popularMovies);
+    });
 });
 
-app.get("/", function (request, response) { 
-    // We have to pass a second parameter to specify the root directory
-    // __dirname is a global variable representing the file directory you are currently in
-    response.sendFile("./pages/index.html", { root: __dirname });
+// Get a single movie
+app.get("/api/movies/:id", function(request, response) {
+    movieData.getMovie(request.params.id).then(function(movie) {
+        response.json(movie);
+    }, function(errorMessage) {
+        response.status(500).json({ error: errorMessage });
+    });
+});
+
+// Get all the movies
+app.get("/api/movies", function(request, response) {
+    movieData.getAllMovies().then(function(movieList) {
+        response.json(movieList);
+    });
+});
+
+// Create a movie
+app.post("/api/movies", function(request, response) {
+    movieData.createMovie(request.body.title, request.body.rating).then(function(movie) {
+        response.json(movie);
+    }, function(errorMessage) {
+        response.status(500).json({ error: errorMessage });
+    });
+});
+
+// Update a movie 
+app.put("/api/movies/:id", function(request, response) {
+    movieData.updateMovie(request.params.id, request.body.title, request.body.rating).then(function(movie) {
+        response.json(movie);
+    }, function(errorMessage) {
+        response.status(500).json({ error: errorMessage });
+    });
+});
+
+app.delete("/api/movies/:id", function(request, response) {
+    movieData.deleteMovie(request.params.id).then(function(status) {
+        response.json({success: status});
+    }, function(errorMessage) {
+        response.status(500).json({ error: errorMessage });
+    });
 });
 
 // We can now navigate to localhost:3000
-app.listen(3000, function () {
+app.listen(3000, function() {
     console.log('Your server is now listening on port 3000! Navigate to http://localhost:3000 to access it');
 });
