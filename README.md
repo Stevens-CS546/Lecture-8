@@ -1,2 +1,2 @@
-# Boilerplate
-A boilerplate to use in CS-546 Assignments
+# Lecture 8
+An intro to MongoDB
