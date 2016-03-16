@@ -31,7 +31,7 @@ MongoClient.connect(fullMongoUrl)
 
         // we can still update our data module by adding properties here, even though it's inside a callback!
         exports.getMovie = function(id) {
-            if (!id) throw "You must provide an ID";
+            if (!id) return Promise.reject("You must provide an ID");
 
             // by calling .toArray() on the function, we convert the Mongo Cursor to a promise where you can 
             // easily iterate like a normal array
@@ -44,8 +44,8 @@ MongoClient.connect(fullMongoUrl)
 
         // creating data in MongoDB is very easy, as we can just use a simple insert method
         exports.createMovie = function(title, rating) {
-            if (!title) throw "You must provide a title";
-            if (rating == null || rating === undefined || rating < 0 || rating > 5) throw "You have provided an invalid rating";
+            if (!title)  Promise.reject("You must provide a title");
+            if (rating == null || rating === undefined || rating < 0 || rating > 5) Promise.reject("You have provided an invalid rating");
 
             // Our insertOne method takes a JSON object as its first parameter; 
             // there are overloads that have more parameters
@@ -70,9 +70,9 @@ MongoClient.connect(fullMongoUrl)
         };
 
         exports.updateMovie = function(id, newTitle, newRating) {
-            if (!id) throw "You must provide an ID";
-            if (!newTitle) throw "You must provide a title";
-            if (newRating == null || newRating === undefined || newRating < 0 || newRating > 5) throw "You have provided an invalid rating";
+            if (!id) Promise.reject("You must provide an ID");
+            if (!newTitle) Promise.reject("You must provide a title");
+            if (newRating == null || newRating === undefined || newRating < 0 || newRating > 5) Promise.reject("You have provided an invalid rating");
 
             // our first parameters is a way of describing the document to update;
             // our second will be a replacement version of the document;

@@ -12,7 +12,9 @@ function runSetup() {
 
             return movieCollection.count().then(function(theCount) {
                 // the result of find() is a cursor to MongoDB, and we can call toArray() on it
-                if (theCount > 0) return movieCollection.find().toArray();
+                if (theCount > 0) {
+                    return movieCollection.find.toArray();
+                }
 
                 return movieCollection.insertOne({ _id: Guid.create().toString(), title: "The Last Samurai", rating: 4.5 }).then(function(newDoc) {
                     return newDoc;
